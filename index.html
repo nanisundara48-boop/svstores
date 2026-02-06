@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SV Stores | Professional Broom Materials</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .amazon-yellow { background-color: #FFD814; }
+        .amazon-orange { background-color: #FFA41C; }
+        .bg-amazon-gray { background-color: #EAEDED; }
+        .hide { display: none !important; }
+        .active-nav { color: #e67e22 !important; font-weight: bold; }
+        ::-webkit-scrollbar { width: 0px; }
+    </style>
+</head>
+<body class="bg-amazon-gray font-sans overflow-hidden" id="bodyTag">
+
+    <div id="login-screen" class="fixed inset-0 bg-white z-[100] flex flex-col p-8 overflow-y-auto">
+        <div class="flex justify-center mb-10 mt-12">
+            <h1 class="text-4xl font-black text-orange-600 italic tracking-tighter">SV STORES</h1>
+        </div>
+        <div class="max-w-md mx-auto w-full">
+            <div class="border border-gray-300 p-6 rounded shadow-sm">
+                <h2 class="text-2xl font-semibold mb-5">Sign-In</h2>
+                <input type="text" placeholder="Email or phone" class="w-full p-3 border border-gray-400 rounded mb-4 outline-none focus:border-orange-500">
+                <input type="password" placeholder="Password" class="w-full p-3 border border-gray-400 rounded mb-6 outline-none focus:border-orange-500">
+                <button onclick="enterApp()" class="w-full amazon-yellow py-3 rounded-md shadow-md font-bold mb-4">Continue</button>
+                <div class="flex items-center my-4">
+                    <hr class="flex-1"> <span class="px-2 text-gray-400 text-xs">OR</span> <hr class="flex-1">
+                </div>
+                <button onclick="enterApp()" class="w-full bg-gray-100 border border-gray-300 py-3 rounded-md text-sm font-medium hover:bg-gray-200">
+                    Skip for now (Browse as Guest)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-app" class="hide h-screen flex flex-col">
+        
+        <header class="bg-white border-b z-50">
+            <div class="p-3 flex items-center justify-between">
+                <span class="text-xl font-black italic text-orange-600">SV STORES</span>
+                <div class="flex items-center space-x-5 text-gray-600">
+                    <i class="fa-solid fa-magnifying-glass text-xl"></i>
+                    <i class="fa-solid fa-cart-shopping text-xl"></i>
+                </div>
+            </div>
+            <div class="px-3 pb-3 relative">
+                <input type="text" id="mainSearch" onkeyup="showHints()" placeholder="Search Polyking, Zen, Sutli..." class="w-full p-2.5 bg-gray-100 rounded-lg pl-4 focus:outline-none border border-transparent focus:border-orange-400">
+                <div id="hintBox" class="hide absolute left-3 right-3 bg-white border shadow-2xl z-[60] rounded-b-lg"></div>
+            </div>
+        </header>
+
+        <main id="view-container" class="flex-1 overflow-y-auto pb-20">
+            
+            <section id="page-home" class="p-3">
+                <div class="bg-blue-50 -mx-3 -mt-3 p-2 mb-4 text-xs px-5 border-b"><i class="fa-solid fa-location-dot"></i> Delivering to 533251</div>
+                <h3 class="font-bold text-lg mb-4">Shop Broom Materials</h3>
+                <div id="grid-content" class="grid grid-cols-2 gap-3">
+                    </div>
+            </section>
+
+            <section id="page-detail" class="hide bg-white min-h-screen">
+                <div id="detail-inject"></div>
+            </section>
+
+            <section id="page-cart" class="hide p-10 text-center">
+                <i class="fa-solid fa-cart-plus text-7xl text-gray-200 mt-20"></i>
+                <h2 class="text-xl font-bold mt-5">Your Cart is Empty</h2>
+                <button onclick="showPage('page-home')" class="text-blue-600 mt-2 underline">Shop items now</button>
+            </section>
+
+        </main>
+
+        <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around py-3 h-18 z-50">
+            <button onclick="showPage('page-home')" id="nav-home" class="flex flex-col items-center flex-1 active-nav">
+                <i class="fa-solid fa-house text-xl"></i><span class="text-[10px] mt-1">Home</span>
+            </button>
+            <button class="flex flex-col items-center flex-1 text-gray-400">
+                <i class="fa-regular fa-user text-xl"></i><span class="text-[10px] mt-1">You</span>
+            </button>
+            <button onclick="showPage('page-cart')" id="nav-cart" class="flex flex-col items-center flex-1 text-gray-400">
+                <i class="fa-solid fa-cart-shopping text-xl"></i><span class="text-[10px] mt-1">Cart</span>
+            </button>
+            <button class="flex flex-col items-center flex-1 text-gray-400">
+                <i class="fa-solid fa-bars text-xl"></i><span class="text-[10px] mt-1">Menu</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        const materials = [
+            { id: 1, name: "Polyking Sutli (Heavy)", price: 185, brand: "Polyking", img: "https://images.unsplash.com/photo-1605881528191-68f38c78e3d3?q=80&w=300" },
+            { id: 2, name: "Bansal Steel Wire 22G", price: 83, brand: "Bansal", img: "https://images.unsplash.com/photo-1621259182978-fbf93132d53d?q=80&w=300" },
+            { id: 3, name: "Zen Sutli Soft Touch", price: 140, brand: "Zen", img: "https://images.unsplash.com/photo-1515569067071-ec3b51335dd0?q=80&w=300" },
+            { id: 4, name: "Zoom Red Sutli Rope", price: 95, brand: "Zoom", img: "https://images.unsplash.com/photo-1558236714-d117513c16e7?q=80&w=300" },
+            { id: 5, name: "Wonderfull Jumbo Poly", price: 420, brand: "Wonderfull", img: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=300" }
+        ];
+
+        let db = [];
+        for(let i=0; i<25; i++) {
+            let item = {...materials[i % materials.length]};
+            item.id = i;
+            db.push(item);
+        }
+
+        function enterApp() {
+            document.getElementById('login-screen').classList.add('hide');
+            document.getElementById('main-app').classList.remove('hide');
+            document.getElementById('bodyTag').classList.remove('overflow-hidden');
+            renderHome();
+        }
+
+        function renderHome() {
+            const grid = document.getElementById('grid-content');
+            grid.innerHTML = db.map(p => `
+                <div class="bg-white p-3 rounded-lg border border-gray-200" onclick="viewDetails(${p.id})">
+                    <img src="${p.img}" class="w-full h-32 object-cover rounded mb-2">
+                    <p class="text-xs font-semibold line-clamp-2 h-8">${p.name}</p>
+                    <p class="text-lg font-black mt-2">₹${p.price}</p>
+                    <button class="w-full mt-2 text-[10px] border border-gray-300 py-1 rounded-sm bg-gray-50">View Details</button>
+                </div>
+            `).join('');
+        }
+
+        function viewDetails(id) {
+            const p = db[id];
+            showPage('page-detail');
+            document.getElementById('detail-inject').innerHTML = `
+                <div class="p-4">
+                    <button onclick="showPage('page-home')" class="text-blue-600 mb-5"><i class="fa-solid fa-chevron-left"></i> Back</button>
+                    <img src="${p.img}" class="w-full h-64 object-contain mb-5">
+                    <h1 class="text-2xl font-bold">${p.name}</h1>
+                    <p class="text-3xl font-light text-red-700 my-3">₹${p.price}.00</p>
+                    <div class="bg-green-100 text-green-800 p-2 text-xs inline-block rounded mb-4">In Stock - Ready to Ship</div>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-8">Professional grade ${p.brand} tying material. Essential for broom manufacturing. High durability and weather-resistant properties.</p>
+                    
+                    <button class="w-full amazon-yellow py-4 rounded-full font-bold mb-3 shadow">Add to Cart</button>
+                    <button class="w-full amazon-orange py-4 rounded-full font-bold text-white shadow">Buy Now</button>
+
+                    <div class="mt-10 pt-10 border-t">
+                        <h4 class="font-bold mb-2">Product Feedback</h4>
+                        <textarea class="w-full border p-3 rounded" placeholder="Share your experience with this material..."></textarea>
+                        <button onclick="alert('Feedback sent!'); showPage('page-home')" class="mt-3 bg-gray-800 text-white px-5 py-2 rounded text-sm">Submit Review</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('view-container').scrollTo(0,0);
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hide'));
+            document.getElementById(pageId).classList.remove('hide');
+            
+            // Handle bottom nav colors
+            document.querySelectorAll('nav button').forEach(b => b.classList.replace('active-nav', 'text-gray-400'));
+            if(pageId === 'page-home') document.getElementById('nav-home').classList.add('active-nav');
+            if(pageId === 'page-cart') document.getElementById('nav-cart').classList.add('active-nav');
+        }
+
+        function showHints() {
+            const val = document.getElementById('mainSearch').value.toLowerCase();
+            const box = document.getElementById('hintBox');
+            const hints = ['Polyking Sutli', 'Bansal Wire', 'Zen Sutli', 'Zoom Rope', 'Wonderful Poly'];
+            if(val) {
+                const filtered = hints.filter(h => h.toLowerCase().includes(val));
+                box.classList.remove('hide');
+                box.innerHTML = filtered.map(f => `<div class="p-3 border-b text-sm" onclick="setSearch('${f}')">${f}</div>`).join('');
+            } else { box.classList.add('hide'); }
+        }
+
+        function setSearch(f) {
+            document.getElementById('mainSearch').value = f;
+            document.getElementById('hintBox').classList.add('hide');
+        }
+    </script>
+</body>
+</html>
