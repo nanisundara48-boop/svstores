@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SV Stores | Dual Mode App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .amazon-yellow { background-color: #FFD814; border: 1px solid #FCD200; }
+        .bg-amazon-dark { background-color: #232f3e; }
+        .hide { display: none !important; }
+        .active-nav { color: #ea580c !important; font-weight: bold; border-top: 3px solid #ea580c; }
+        .mode-active { border-bottom: 4px solid #ea580c; color: #ea580c; background-color: #fff7ed; }
+        html { scroll-behavior: smooth; }
+        body { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans h-screen flex flex-col overflow-hidden text-gray-800">
+
+    <div id="login-view" class="fixed inset-0 bg-white z-[100] flex flex-col justify-center px-8">
+        <div class="text-center mb-10">
+            <h1 class="text-5xl font-black text-orange-600 italic tracking-tighter mb-2">SV STORES</h1>
+            <p class="text-gray-500 font-medium">Wholesale Broom & General Merchant</p>
+        </div>
+        <div class="border border-gray-200 p-6 rounded-xl shadow-lg bg-white">
+            <h2 class="text-xl font-bold mb-6 text-gray-800">Welcome Back</h2>
+            <input type="text" id="userNameInput" placeholder="Enter Your Name" class="w-full p-4 border rounded-lg mb-4 bg-gray-50 focus:outline-orange-500 transition">
+            <input type="number" placeholder="Mobile Number" class="w-full p-4 border rounded-lg mb-6 bg-gray-50 focus:outline-orange-500 transition">
+            <button onclick="enterApp()" class="w-full amazon-yellow py-4 rounded-lg shadow-md font-bold text-gray-800 hover:bg-yellow-400 transition">Login</button>
+            <button onclick="enterApp()" class="w-full mt-4 text-sm text-blue-600 font-semibold">Skip & Browse as Guest</button>
+        </div>
+    </div>
+
+    <header id="main-header" class="hide bg-white shadow-md z-50 flex-none pb-1">
+        <div class="bg-amazon-dark text-white p-3 flex justify-between items-center shadow">
+            <div class="font-black italic text-xl tracking-tighter">SV STORES</div>
+            <div onclick="updateLocation()" class="flex items-center gap-2 text-xs bg-white/10 px-2 py-1 rounded cursor-pointer">
+                <i class="fa-solid fa-location-dot text-orange-400"></i>
+                <span id="header-loc" class="font-bold">Bhimavaram</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+        </div>
+        <div class="p-2 bg-amazon-dark pt-1 pb-3">
+            <div class="relative">
+                <input type="text" id="searchBar" onkeyup="filterProducts()" placeholder="Search items..." class="w-full p-2.5 rounded text-black outline-none shadow-inner pl-10">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
+            </div>
+        </div>
+        <div class="flex bg-white border-b shadow-sm">
+            <button onclick="switchMode('broom')" id="btn-broom" class="flex-1 py-3 flex flex-col items-center justify-center mode-active transition-all">
+                <span class="text-xl">🧹</span>
+                <span class="text-[10px] font-black tracking-wide mt-1">BROOM FACTORY</span>
+            </button>
+            <div class="w-[1px] bg-gray-200"></div>
+            <button onclick="switchMode('general')" id="btn-general" class="flex-1 py-3 flex flex-col items-center justify-center text-gray-400 transition-all">
+                <span class="text-xl">🏠</span>
+                <span class="text-[10px] font-black tracking-wide mt-1">GENERAL STORE</span>
+            </button>
+        </div>
+    </header>
+
+    <main id="content-area" class="hide flex-1 overflow-y-auto pb-24 bg-gray-100 relative">
+        <div id="home-view" class="p-2">
+            <div id="banner-area" class="mb-4 rounded-lg overflow-hidden shadow relative h-40 bg-gray-200"></div>
+            <div class="flex justify-between items-center px-1 mb-2">
+                <h3 id="category-title" class="font-bold text-gray-800 text-lg">Featured Items</h3>
+                <span class="text-xs text-blue-600 font-bold">See All</span>
+            </div>
+            <div id="product-grid" class="grid grid-cols-2 gap-2"></div>
+            <div class="text-center py-6 text-gray-400 text-xs">
+                <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Showing all items
+            </div>
+        </div>
+
+        <div id="profile-view" class="hide bg-gray-50 min-h-full">
+            <div class="bg-amazon-dark p-8 text-white rounded-b-3xl shadow-lg text-center relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="w-24 h-24 bg-white text-gray-800 rounded-full mx-auto flex items-center justify-center text-4xl shadow-xl mb-3 border-4 border-orange-500">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <h2 id="profile-name" class="text-2xl font-bold">Guest User</h2>
+                    <p class="text-sm opacity-80">+91 96186 22559</p>
+                </div>
+                <div class="absolute top-[-50px] left-[-50px] w-40 h-40 bg-white/10 rounded-full"></div>
+                <div class="absolute bottom-[-20px] right-[-20px] w-32 h-32 bg-orange-500/20 rounded-full"></div>
+            </div>
+            <div class="p-4 -mt-6 relative z-20 space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-around text-center">
+                    <div class="flex flex-col items-center"><div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-1"><i class="fa-solid fa-box"></i></div><span class="text-xs font-bold">Orders</span></div>
+                    <div class="flex flex-col items-center"><div class="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-1"><i class="fa-solid fa-headset"></i></div><span class="text-xs font-bold">Support</span></div>
+                    <div class="flex flex-col items-center"><div class="w-10 h-10 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center mb-1"><i class="fa-solid fa-wallet"></i></div><span class="text-xs font-bold">Wallet</span></div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-gray-700"><i class="fa-solid fa-map-location-dot mr-2 text-orange-500"></i>Saved Address</h3>
+                        <button onclick="updateLocation()" class="text-xs bg-gray-100 px-2 py-1 rounded font-bold text-gray-600">EDIT</button>
+                    </div>
+                    <p id="profile-loc" class="text-sm text-gray-500 leading-relaxed">Door No 5-2, Main Road, Bhimavaram, Andhra Pradesh - 534201</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="cart-view" class="hide bg-gray-100 min-h-full p-3">
+            <h2 class="text-2xl font-bold mb-4 px-1">My Cart <span id="cart-count-txt" class="text-sm font-normal text-gray-500">(0)</span></h2>
+            <div id="cart-list" class="space-y-3 pb-40"></div>
+            <div id="empty-cart" class="text-center mt-24 opacity-60">
+                <i class="fa-solid fa-cart-shopping text-6xl text-gray-300 mb-4"></i>
+                <p class="font-bold">Your cart is empty!</p>
+                <button onclick="navTo('home')" class="mt-4 bg-orange-500 text-white px-6 py-2 rounded-full font-bold shadow text-sm">Start Shopping</button>
+            </div>
+            <div id="checkout-bar" class="hide fixed bottom-20 left-2 right-2 bg-white p-4 rounded-xl shadow-2xl border border-gray-100 z-40">
+                <div class="flex justify-between items-end mb-3">
+                    <span class="text-xs text-gray-500">Total Amount</span>
+                    <span id="total-price" class="text-2xl font-black text-gray-900">₹0</span>
+                </div>
+                <button onclick="placeOrder()" class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-3.5 rounded-lg font-bold shadow-lg flex justify-center items-center gap-2 transition">
+                    <i class="fa-brands fa-whatsapp text-2xl"></i> Place Order on WhatsApp
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <nav class="fixed bottom-0 w-full bg-white border-t shadow-[0_-5px_15px_rgba(0,0,0,0.05)] h-16 flex justify-around items-center z-50">
+        <button onclick="navTo('home')" id="nav-home" class="nav-btn active-nav flex flex-col items-center w-full pt-1"><i class="fa-solid fa-house text-xl mb-1"></i><span class="text-[10px]">Home</span></button>
+        <button onclick="navTo('cart')" id="nav-cart" class="nav-btn flex flex-col items-center w-full pt-1 text-gray-400 relative">
+            <div class="relative"><i class="fa-solid fa-cart-shopping text-xl mb-1"></i><span id="cart-badge" class="hide absolute -top-2 -right-3 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">0</span></div>
+            <span class="text-[10px]">Cart</span>
+        </button>
+        <button onclick="navTo('profile')" id="nav-profile" class="nav-btn flex flex-col items-center w-full pt-1 text-gray-400"><i class="fa-solid fa-user text-xl mb-1"></i><span class="text-[10px]">Profile</span></button>
+    </nav>
+
+    <script>
+        const WHATSAPP_NUMBER = "9618622559";
+        let currentUser = { name: "Guest", loc: "Bhimavaram" };
+        let currentMode = "broom"; 
+        let cart = [];
+
+        function getPlaceholder(name) {
+            const colors = ['e2e8f0', 'fed7aa', 'bbf7d0', 'bfdbfe', 'ddd6fe', 'fbcfe8'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const text = encodeURIComponent(name.split(' ')[0]);
+            return `https://placehold.co/300x300/${color}/475569?text=${text}`;
+        }
+
+        const broomItems = [
+            { id: 1, name: "Polyking Sutli (Heavy)", price: 185, cat: "Sutli", img: "https://images.unsplash.com/photo-1605881528191-68f38c78e3d3?w=300" },
+            { id: 2, name: "Bansal Steel Wire 22G", price: 83, cat: "Wire", img: "https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=300" },
+            { id: 3, name: "Zen Sutli (Soft White)", price: 140, cat: "Sutli", img: "https://images.unsplash.com/photo-1515569067071-ec3b51335dd0?w=300" },
+            { id: 4, name: "Zoom Red Elastic Rope", price: 95, cat: "Rope", img: "https://images.unsplash.com/photo-1558236714-d117513c16e7?w=300" },
+            { id: 5, name: "Wonderfull Jumbo Roll", price: 420, cat: "Bulk", img: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=300" },
+            { id: 6, name: "Plastic Handles (12pc)", price: 150, cat: "Handles", img: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=300" },
+            { id: 7, name: "Coconut Broom Sticks", price: 45, cat: "Raw", img: "https://images.unsplash.com/photo-1595475267029-79a613296d92?w=300" },
+            { id: 8, name: "Binding Machine Hand", price: 1200, cat: "Tools", img: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=300" }
+        ];
+
+        const generalItemsRaw = [
+            { n: "Premium Sugar", p: 42, k: "sugar" }, { n: "Jaggery (Bellam)", p: 60, k: "jaggery" },
+            { n: "Toor Dal", p: 130, k: "lentils" }, { n: "Moong Dal", p: 110, k: "legumes" },
+            { n: "Basmati Rice", p: 95, k: "rice" }, { n: "Sona Masoori Rice", p: 55, k: "grain" },
+            { n: "Sunflower Oil", p: 140, k: "oil" }, { n: "Groundnut Oil", p: 180, k: "oil" },
+            { n: "Red Chilli Powder", p: 250, k: "chilli" }, { n: "Turmeric Powder", p: 180, k: "turmeric" },
+            { n: "Tata Salt", p: 24, k: "salt" }, { n: "Crystal Salt", p: 15, k: "salt" },
+            { n: "Taj Mahal Tea", p: 320, k: "tea" }, { n: "Red Label Tea", p: 280, k: "tea" },
+            { n: "Bru Instant Coffee", p: 350, k: "coffee" }, { n: "Nescafe Classic", p: 380, k: "coffee" },
+            { n: "Maggi Noodles", p: 14, k: "noodles" }, { n: "Yippee Noodles", p: 12, k: "noodles" },
+            { n: "Good Day Biscuits", p: 30, k: "cookies" }, { n: "Marie Gold", p: 25, k: "biscuits" },
+            { n: "Oreo Pack", p: 40, k: "chocolate" }, { n: "Dark Fantasy", p: 50, k: "cookies" },
+            { n: "Rin Detergent Bar", p: 10, k: "soap" }, { n: "Surf Excel Powder", p: 120, k: "detergent" },
+            { n: "Vim Dishwash Bar", p: 20, k: "soap" }, { n: "Harpic Cleaner", p: 95, k: "cleaner" },
+            { n: "Colgate Paste", p: 85, k: "toothpaste" }, { n: "CloseUp Red", p: 80, k: "toothpaste" },
+            { n: "Lux Soap", p: 35, k: "soap" }, { n: "Santoor Soap", p: 32, k: "soap" },
+            { n: "Clinic Plus Shampoo", p: 80, k: "shampoo" }, { n: "Head & Shoulders", p: 180, k: "shampoo" },
+            { n: "Parachute Coconut Oil", p: 110, k: "oil" }, { n: "Almond Hair Oil", p: 150, k: "oil" },
+            { n: "Pears Soap", p: 45, k: "soap" }, { n: "Dettol Handwash", p: 90, k: "sanitizer" },
+            { n: "Wheat Flour (Atta)", p: 45, k: "wheat" }, { n: "Maida Flour", p: 40, k: "flour" },
+            { n: "Bombay Rava", p: 42, k: "grain" }, { n: "Poha (Atukulu)", p: 50, k: "rice" },
+            { n: "Tamarind (Chinta)", p: 120, k: "tamarind" }, { n: "Garlic (Vellulli)", p: 150, k: "garlic" }
+        ];
+
+        let generalItems = [];
+        let gId = 100;
+        generalItemsRaw.forEach(item => {
+            generalItems.push({
+                id: gId++, name: item.n + " 1kg/1L", price: item.p,
+                img: `https://source.unsplash.com/random/300x300/?${item.k}`, cat: "Grocery"
+            });
+            generalItems.push({
+                id: gId++, name: item.n + " 500g/ml", price: Math.floor(item.p / 1.9),
+                img: `https://source.unsplash.com/random/300x301/?${item.k}`, cat: "Grocery"
+            });
+        });
+
+        function enterApp() {
+            const name = document.getElementById('userNameInput').value;
+            if(name) currentUser.name = name;
+            document.getElementById('profile-name').innerText = currentUser.name;
+            document.getElementById('login-view').classList.add('hide');
+            document.getElementById('main-header').classList.remove('hide');
+            document.getElementById('content-area').classList.remove('hide');
+            document.querySelector('nav').classList.remove('hidden');
+            switchMode('broom');
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            const btnBroom = document.getElementById('btn-broom');
+            const btnGen = document.getElementById('btn-general');
+            const banner = document.getElementById('banner-area');
+            const search = document.getElementById('searchBar');
+
+            if(mode === 'broom') {
+                btnBroom.classList.add('mode-active', 'text-orange-600'); btnBroom.classList.remove('text-gray-400');
+                btnGen.classList.remove('mode-active', 'text-orange-600'); btnGen.classList.add('text-gray-400');
+                search.placeholder = "Search Sutli, Wire...";
+                banner.innerHTML = `<img src="https://images.unsplash.com/photo-1621259182978-fbf93132d53d?q=80&w=800" class="w-full h-full object-cover"><div class="absolute bottom-0 w-full bg-black/60 p-3 text-white"><p class="font-bold">🏭 Broom Materials Factory</p></div>`;
+                renderGrid(broomItems);
+            } else {
+                btnGen.classList.add('mode-active', 'text-orange-600'); btnGen.classList.remove('text-gray-400');
+                btnBroom.classList.remove('mode-active', 'text-orange-600'); btnBroom.classList.add('text-gray-400');
+                search.placeholder = "Search Sugar, Tea, Soap...";
+                banner.innerHTML = `<img src="https://images.unsplash.com/photo-1604719312566-b7cb837627fa?q=80&w=800" class="w-full h-full object-cover"><div class="absolute bottom-0 w-full bg-black/60 p-3 text-white"><p class="font-bold">🥦 General Store & Grocery</p></div>`;
+                renderGrid(generalItems);
+            }
+        }
+
+        function renderGrid(items) {
+            document.getElementById('product-grid').innerHTML = items.map(p => `
+                <div class="bg-white rounded-lg border border-gray-100 shadow-sm flex flex-col overflow-hidden h-60">
+                    <div class="h-32 bg-gray-50 relative">
+                        <img src="${p.img}" onerror="this.src='${getPlaceholder(p.name)}'" class="w-full h-full object-contain p-2 hover:scale-105 transition duration-300">
+                    </div>
+                    <div class="p-2 flex flex-col justify-between flex-1">
+                        <p class="text-xs font-medium text-gray-800 line-clamp-2 h-8 leading-tight">${p.name}</p>
+                        <div>
+                            <div class="flex items-end gap-1 mb-2"><span class="text-sm font-bold">₹${p.price}</span><span class="text-[10px] text-gray-400 line-through">₹${Math.floor(p.price * 1.2)}</span></div>
+                            <button onclick="addToCart(${p.id})" class="w-full bg-yellow-400 hover:bg-yellow-500 py-1.5 rounded text-xs font-bold text-gray-900 shadow-sm active:scale-95 transition">ADD</button>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+
+        function addToCart(id) {
+            let item = broomItems.find(x => x.id === id) || generalItems.find(x => x.id === id);
+            let existing = cart.find(x => x.id === id);
+            if(existing) existing.qty++; else cart.push({...item, qty: 1});
+            updateCartUI();
+            if(navigator.vibrate) navigator.vibrate(50);
+        }
+
+        function updateCartUI() {
+            const totalQty = cart.reduce((a,b) => a + b.qty, 0);
+            const badge = document.getElementById('cart-badge');
+            if(totalQty > 0) { badge.innerText = totalQty; badge.classList.remove('hide'); } else { badge.classList.add('hide'); }
+            document.getElementById('cart-count-txt').innerText = `(${totalQty} items)`;
+        }
+
+        function renderCartPage() {
+            const list = document.getElementById('cart-list');
+            if(cart.length === 0) {
+                list.innerHTML = ''; document.getElementById('empty-cart').classList.remove('hide'); document.getElementById('checkout-bar').classList.add('hide'); return;
+            }
+            document.getElementById('empty-cart').classList.add('hide'); document.getElementById('checkout-bar').classList.remove('hide');
+            let total = 0;
+            list.innerHTML = cart.map((item) => {
+                total += item.price * item.qty;
+                return `<div class="flex bg-white p-3 rounded-lg shadow-sm border gap-3"><img src="${item.img}" onerror="this.src='${getPlaceholder(item.name)}'" class="w-16 h-16 object-contain border rounded bg-gray-50"><div class="flex-1"><h4 class="text-sm font-bold line-clamp-1">${item.name}</h4><p class="text-xs text-gray-500">Price: ₹${item.price}</p><div class="flex justify-between items-center mt-2"><span class="font-bold">₹${item.price * item.qty}</span><div class="flex items-center border rounded bg-gray-50 h-7"><button onclick="modQty(${item.id}, -1)" class="px-2 text-gray-600 font-bold">-</button><span class="px-1 text-xs font-bold w-4 text-center">${item.qty}</span><button onclick="modQty(${item.id}, 1)" class="px-2 text-green-600 font-bold">+</button></div></div></div></div>`;
+            }).join('');
+            document.getElementById('total-price').innerText = "₹" + total;
+        }
+
+        function modQty(id, val) {
+            let item = cart.find(x => x.id === id);
+            item.qty += val;
+            if(item.qty <= 0) cart = cart.filter(x => x.id !== id);
+            updateCartUI(); renderCartPage();
+        }
+
+        function navTo(pageId) {
+            ['home-view', 'profile-view', 'cart-view'].forEach(id => document.getElementById(id).classList.add('hide'));
+            document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active-nav', 'text-orange-600'); b.classList.add('text-gray-400'); });
+            document.getElementById(`${pageId}-view`).classList.remove('hide');
+            document.getElementById(`nav-${pageId}`).classList.add('active-nav', 'text-orange-600');
+            document.getElementById(`nav-${pageId}`).classList.remove('text-gray-400');
+            if(pageId === 'cart') renderCartPage();
+            if(pageId === 'home') switchMode(currentMode);
+        }
+
+        function updateLocation() {
+            let loc = prompt("Update Delivery City/Village:", currentUser.loc);
+            if(loc) { currentUser.loc = loc; document.getElementById('header-loc').innerText = loc; document.getElementById('profile-loc').innerText = loc; }
+        }
+
+        function filterProducts() {
+            const txt = document.getElementById('searchBar').value.toLowerCase();
+            const source = currentMode === 'broom' ? broomItems : generalItems;
+            renderGrid(source.filter(i => i.name.toLowerCase().includes(txt)));
+        }
+
+        function placeOrder() {
+            if(cart.length === 0) return;
+            let msg = `*NEW ORDER - SV STORES*\nName: ${currentUser.name}\nLocation: ${currentUser.loc}\n---------------------------\n`;
+            cart.forEach(i => msg += `${i.name} (x${i.qty}) = ₹${i.price * i.qty}\n`);
+            msg += `---------------------------\n*GRAND TOTAL: ₹${cart.reduce((a,b) => a + (b.price*b.qty), 0)}*`;
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+    </script>
+</body>
+</html>
