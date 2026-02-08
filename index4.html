@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SV Stores | Professional Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        // Tailwind Dark Mode configuration
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        .amazon-yellow { background-color: #FFD814; border: 1px solid #FCD200; }
+        .bg-amazon-dark { background-color: #232f3e; }
+        .hide { display: none !important; }
+        .active-nav { color: #ea580c !important; font-weight: bold; border-top: 3px solid #ea580c; }
+        .mode-active { border-bottom: 4px solid #ea580c; color: #ea580c; background-color: #fff7ed; }
+        .dark .mode-active { background-color: #1e1b4b; color: #fb923c; }
+        html { scroll-behavior: smooth; }
+        body { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s; }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-slate-900 font-sans h-screen flex flex-col overflow-hidden text-gray-800 dark:text-gray-100">
+
+    <div id="login-view" class="fixed inset-0 bg-white dark:bg-slate-900 z-[100] flex flex-col justify-center px-8">
+        <div class="text-center mb-10">
+            <h1 class="text-5xl font-black text-orange-600 italic tracking-tighter mb-2">SV STORES</h1>
+            <p class="text-gray-500 dark:text-gray-400 font-medium">Wholesale Broom & General Merchant</p>
+        </div>
+        <div class="border border-gray-200 dark:border-slate-700 p-6 rounded-xl shadow-lg bg-white dark:bg-slate-800">
+            <h2 class="text-xl font-bold mb-6 text-gray-800 dark:text-white">Welcome Back</h2>
+            <input type="text" id="userNameInput" placeholder="Enter Your Name" class="w-full p-4 border rounded-lg mb-4 bg-gray-50 dark:bg-slate-700 dark:border-slate-600 focus:outline-orange-500 transition">
+            <input type="number" placeholder="Mobile Number" class="w-full p-4 border rounded-lg mb-6 bg-gray-50 dark:bg-slate-700 dark:border-slate-600 focus:outline-orange-500 transition">
+            <button onclick="enterApp()" class="w-full amazon-yellow py-4 rounded-lg shadow-md font-bold text-gray-800 hover:bg-yellow-400 transition">Login</button>
+            <button onclick="enterApp()" class="w-full mt-4 text-sm text-blue-600 dark:text-blue-400 font-semibold">Skip & Browse as Guest</button>
+        </div>
+    </div>
+
+    <header id="main-header" class="hide bg-white dark:bg-slate-800 shadow-md z-50 flex-none pb-1">
+        <div class="bg-amazon-dark text-white p-3 flex justify-between items-center shadow">
+            <div class="font-black italic text-xl tracking-tighter">SV STORES</div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleDarkMode()" class="text-xl focus:outline-none">
+                    <i id="theme-icon" class="fa-solid fa-moon text-yellow-400"></i>
+                </button>
+                <div onclick="updateLocation()" class="flex items-center gap-2 text-xs bg-white/10 px-2 py-1 rounded cursor-pointer hover:bg-white/20">
+                    <i class="fa-solid fa-location-dot text-orange-400"></i>
+                    <span id="header-loc" class="font-bold">Set Address</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-2 bg-amazon-dark pt-1 pb-3">
+            <div class="relative">
+                <input type="text" id="searchBar" onkeyup="filterProducts()" placeholder="Search items..." class="w-full p-2.5 rounded text-black outline-none shadow-inner pl-10">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
+            </div>
+        </div>
+
+        <div class="flex bg-white dark:bg-slate-800 border-b dark:border-slate-700 shadow-sm">
+            <button onclick="switchMode('broom')" id="btn-broom" class="flex-1 py-3 flex flex-col items-center justify-center mode-active transition-all">
+                <span class="text-xl">🧹</span>
+                <span class="text-[10px] font-black tracking-wide mt-1">BROOM FACTORY</span>
+            </button>
+            <div class="w-[1px] bg-gray-200 dark:bg-slate-700"></div>
+            <button onclick="switchMode('general')" id="btn-general" class="flex-1 py-3 flex flex-col items-center justify-center text-gray-400 transition-all">
+                <span class="text-xl">🏠</span>
+                <span class="text-[10px] font-black tracking-wide mt-1">GENERAL STORE</span>
+            </button>
+        </div>
+    </header>
+
+    <main id="content-area" class="hide flex-1 overflow-y-auto pb-24 bg-gray-100 dark:bg-slate-900 relative">
+        
+        <div id="home-view" class="p-2">
+            <div id="banner-area" class="mb-4 rounded-lg overflow-hidden shadow relative h-40 bg-gray-200 dark:bg-slate-800"></div>
+            
+            <div class="flex justify-between items-center px-1 mb-2">
+                <h3 id="category-title" class="font-bold text-gray-800 dark:text-white text-lg">Featured Items</h3>
+                <span class="text-xs text-blue-600 dark:text-blue-400 font-bold">See All</span>
+            </div>
+            
+            <div id="product-grid" class="grid grid-cols-2 gap-2"></div>
+            
+            <div class="text-center py-6 text-gray-400 text-xs">
+                <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Showing all items
+            </div>
+        </div>
+
+        <div id="profile-view" class="hide bg-gray-50 dark:bg-slate-900 min-h-full">
+            <div class="bg-amazon-dark p-8 text-white rounded-b-3xl shadow-lg text-center relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="w-24 h-24 bg-white text-gray-800 rounded-full mx-auto flex items-center justify-center text-4xl shadow-xl mb-3 border-4 border-orange-500">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <h2 id="profile-name" class="text-2xl font-bold">Guest User</h2>
+                    <p class="text-sm opacity-80" id="profile-phone">+91 96186 22559</p>
+                </div>
+            </div>
+
+            <div class="p-4 -mt-6 relative z-20 space-y-4">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 flex justify-around text-center">
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-full flex items-center justify-center mb-1"><i class="fa-solid fa-box"></i></div>
+                        <span class="text-xs font-bold">Orders</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 bg-green-50 dark:bg-green-900 text-green-600 dark:text-green-300 rounded-full flex items-center justify-center mb-1"><i class="fa-solid fa-headset"></i></div>
+                        <span class="text-xs font-bold">Support</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 bg-purple-50 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full flex items-center justify-center mb-1"><i class="fa-solid fa-wallet"></i></div>
+                        <span class="text-xs font-bold">Wallet</span>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-gray-700 dark:text-gray-200"><i class="fa-solid fa-map-location-dot mr-2 text-orange-500"></i>Delivery Address</h3>
+                        <button onclick="updateLocation()" class="text-xs bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded font-bold text-gray-600 dark:text-gray-300">EDIT</button>
+                    </div>
+                    <p id="profile-loc" class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed italic text-center py-2">No address set. Click Edit to add.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="cart-view" class="hide bg-gray-100 dark:bg-slate-900 min-h-full p-3">
+             <h2 class="text-2xl font-bold mb-4 px-1 dark:text-white">My Cart</h2>
+             <div id="cart-list" class="space-y-3"></div>
+             <div id="checkout-bar" class="hide fixed bottom-20 left-2 right-2 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-2xl border border-gray-100 dark:border-slate-700 z-40">
+                <div class="flex justify-between items-end mb-3">
+                    <span class="text-xs text-gray-500">Total Amount</span>
+                    <span id="total-price" class="text-2xl font-black text-gray-900 dark:text-white">₹0</span>
+                </div>
+                <button onclick="placeOrder()" class="w-full bg-[#25D366] text-white py-3.5 rounded-lg font-bold shadow-lg flex justify-center items-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-2xl"></i> Order on WhatsApp
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <nav class="fixed bottom-0 w-full bg-white dark:bg-slate-800 border-t dark:border-slate-700 shadow-lg h-16 flex justify-around items-center z-50">
+        <button onclick="navTo('home')" id="nav-home" class="nav-btn active-nav flex flex-col items-center w-full pt-1">
+            <i class="fa-solid fa-house text-xl mb-1"></i><span class="text-[10px]">Home</span>
+        </button>
+        <button onclick="navTo('cart')" id="nav-cart" class="nav-btn flex flex-col items-center w-full pt-1 text-gray-400 relative">
+            <i class="fa-solid fa-cart-shopping text-xl mb-1"></i><span id="cart-badge" class="hide absolute top-0 right-4 bg-red-600 text-white text-[10px] px-1.5 rounded-full">0</span>
+            <span class="text-[10px]">Cart</span>
+        </button>
+        <button onclick="navTo('profile')" id="nav-profile" class="nav-btn flex flex-col items-center w-full pt-1 text-gray-400">
+            <i class="fa-solid fa-user text-xl mb-1"></i><span class="text-[10px]">Profile</span>
+        </button>
+    </nav>
+
+    <script>
+        const WHATSAPP_NUMBER = "+91 9618622559";
+        let currentMode = "broom"; 
+        let cart = [];
+
+        // --- 1. DARK MODE LOGIC ---
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcon(isDark);
+        }
+
+        function updateThemeIcon(isDark) {
+            const icon = document.getElementById('theme-icon');
+            icon.className = isDark ? 'fa-solid fa-sun text-yellow-400' : 'fa-solid fa-moon text-yellow-400';
+        }
+
+        // --- 2. ADDRESS SYSTEM ---
+        function updateLocation() {
+            const newLoc = prompt("Enter your delivery address:", localStorage.getItem('user_loc') || "");
+            if (newLoc !== null && newLoc.trim() !== "") {
+                localStorage.setItem('user_loc', newLoc);
+                applyStoredData();
+                alert("Address updated successfully!");
+            }
+        }
+
+        function applyStoredData() {
+            const savedLoc = localStorage.getItem('user_loc') || "Click to set location";
+            document.getElementById('header-loc').innerText = savedLoc.substring(0, 15) + (savedLoc.length > 15 ? "..." : "");
+            document.getElementById('profile-loc').innerText = savedLoc;
+            
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                updateThemeIcon(true);
+            }
+        }
+
+        // --- 3. PRODUCT DATA (With Related Images) ---
+        const broomItems = [
+            { id: 1, name: "Premium Coconut Broom Sticks", price: 45, img: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400" },
+            { id: 2, name: "Polyking Heavy Sutli", price: 185, img: "https://images.unsplash.com/photo-1605881528191-68f38c78e3d3?w=400" },
+            { id: 3, name: "Bansal Steel Wire 22G", price: 83, img: "https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=400" },
+            { id: 4, name: "Soft White Zen Sutli", price: 140, img: "https://images.unsplash.com/photo-1515569067071-ec3b51335dd0?w=400" }
+        ];
+
+        const generalItems = [
+            { id: 101, name: "Premium Sugar 1kg", price: 42, img: "https://images.unsplash.com/photo-1581441363689-1f3c3c414635?w=400" },
+            { id: 102, name: "Sona Masoori Rice 5kg", price: 275, img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400" },
+            { id: 103, name: "Sunflower Oil 1L", price: 140, img: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400" },
+            { id: 104, name: "Tata Salt 1kg", price: 24, img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400" }
+        ];
+
+        // --- CORE FUNCTIONS ---
+        function enterApp() {
+            const name = document.getElementById('userNameInput').value || "Guest";
+            document.getElementById('profile-name').innerText = name;
+            document.getElementById('login-view').classList.add('hide');
+            document.getElementById('main-header').classList.remove('hide');
+            document.getElementById('content-area').classList.remove('hide');
+            switchMode('broom');
+            applyStoredData();
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            const btnBroom = document.getElementById('btn-broom');
+            const btnGen = document.getElementById('btn-general');
+            const banner = document.getElementById('banner-area');
+            
+            if(mode === 'broom') {
+                btnBroom.classList.add('mode-active'); btnGen.classList.remove('mode-active');
+                banner.innerHTML = `<img src="https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=800" class="w-full h-full object-cover">`;
+                renderGrid(broomItems);
+            } else {
+                btnGen.classList.add('mode-active'); btnBroom.classList.remove('mode-active');
+                banner.innerHTML = `<img src="https://images.unsplash.com/photo-1604719312566-b7cb837627fa?w=800" class="w-full h-full object-cover">`;
+                renderGrid(generalItems);
+            }
+        }
+
+        function renderGrid(items) {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = items.map(p => `
+                <div class="bg-white dark:bg-slate-800 rounded-lg border border-gray-100 dark:border-slate-700 shadow-sm flex flex-col overflow-hidden h-64">
+                    <div class="h-32 bg-gray-50 dark:bg-slate-700">
+                        <img src="${p.img}" class="w-full h-full object-cover p-1">
+                    </div>
+                    <div class="p-2 flex flex-col justify-between flex-1">
+                        <p class="text-xs font-bold dark:text-gray-200 line-clamp-2">${p.name}</p>
+                        <div>
+                            <div class="flex items-end gap-1 mb-2">
+                                <span class="text-sm font-black text-orange-600">₹${p.price}</span>
+                                <span class="text-[10px] text-gray-400 line-through">₹${Math.floor(p.price * 1.2)}</span>
+                            </div>
+                            <button onclick="addToCart(${p.id})" class="w-full amazon-yellow py-1.5 rounded text-xs font-bold text-gray-900 active:scale-95 transition">
+                                ADD TO CART
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function navTo(view) {
+            document.getElementById('home-view').classList.add('hide');
+            document.getElementById('profile-view').classList.add('hide');
+            document.getElementById('cart-view').classList.add('hide');
+            document.getElementById(view + '-view').classList.remove('hide');
+            
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-nav'));
+            document.getElementById('nav-' + view).classList.add('active-nav');
+        }
+
+        function addToCart(id) {
+            let item = [...broomItems, ...generalItems].find(x => x.id === id);
+            cart.push(item);
+            document.getElementById('cart-badge').classList.remove('hide');
+            document.getElementById('cart-badge').innerText = cart.length;
+            if(navigator.vibrate) navigator.vibrate(50);
+        }
+
+        window.onload = applyStoredData;
+    </script>
+</body>
+</html>
